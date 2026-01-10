@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جاري تحضير الرابط...</title>
+
+    <script src="https://pl28383705.effectivegatecpm.com/56/95/42/569542e974434f0ab768675be4d8fce0.js"></script>
+
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: #1a1a1a; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        #click-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; cursor: pointer; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); }
+        .card { background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 1001; min-width: 300px; max-width: 90%; }
+        .timer { font-size: 70px; color: #e74c3c; font-weight: bold; margin: 15px 0; }
+        .btn-green { display: inline-block; padding: 15px 40px; background-color: #27ae60; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; cursor: pointer; border: none; }
+        .btn-green:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        #adblock-message { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; color:white; text-align:center; padding-top:100px; }
+    </style>
+</head>
+<body>
+
+<div id="adblock-message">
+    <h1>⚠️ عذراً، يجب تعطيل حاجب الإعلانات</h1>
+    <p>يرجى تعطيل مانع الإعلانات لتتمكن من الوصول للفيديو.</p>
+</div>
+
+<div id="click-overlay" onclick="handleFirstClick()">
+    <div class="card">
+        <h2 id="status-text" style="color: #2c3e50;">إضغط في أي مكان للمشاهدة...</h2>
+        <div id="countdown" class="timer">30</div>
+        <p id="sub-text" style="color: #666;">سيتم تفعيل العداد بعد فتح الإعلان (5 ثوانٍ)</p>
+    </div>
+</div>
+
+<div id="final-step" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; width: 100%; text-align: center;">
+    <div class="card" style="margin: auto;">
+        <h2 style="color: #2c3e50;">الرابط جاهز تقريباً!</h2>
+        <p style="color: #666; margin-bottom: 20px;">اضغط على الزر وانتظر 10 ثوانٍ للتحويل</p>
+        <button id="green-btn" onclick="handleSecondClick()" class="btn-green">اضغط للمشاهدة الآن</button>
+        <p id="wait-msg" style="margin-top: 15px; color: #e67e22; font-weight: bold;"></p>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // ⬇️ ضع رابط الفيديو هنا ⬇️
+    var youtubeVideoUrl = "https://youtu.be/dIHVCuh47b0"; 
+    // ==========================================
+
+    var timeLeft = 30;
+    var firstClickDone = false;
+
+    function handleFirstClick() {
+        if (firstClickDone) return;
+        firstClickDone = true;
+        
+        // تم حذف window.open الخاص بالسمارت لينك القديم ليعمل البوب اندر الجديد فقط
+        
+        document.getElementById("status-text").innerHTML = "جاري التأكد من المشاهدة...";
+        document.getElementById("status-text").style.color = "#e67e22";
+        setTimeout(function() { startTimer(); }, 5000);
+    }
+
+    function startTimer() {
+        document.getElementById("status-text").innerHTML = "جاري تجهيز الرابط...";
+        document.getElementById("status-text").style.color = "#27ae60";
+        var downloadTimer = setInterval(function(){
+            timeLeft -= 1;
+            document.getElementById("countdown").innerHTML = timeLeft;
+            if(timeLeft <= 0){
+                clearInterval(downloadTimer);
+                document.getElementById("click-overlay").style.display = "none";
+                document.getElementById("final-step").style.display = "block";
+            }
+        }, 1000);
+    }function handleSecondClick() {
+        // تم حذف window.open الخاص بالسمارت لينك القديم ليعمل البوب اندر الجديد فقط
+        
+        var btn = document.getElementById("green-btn");
+        var msg = document.getElementById("wait-msg");
+        btn.disabled = true;
+        btn.innerHTML = "جاري التحقق...";
+        msg.innerHTML = "يجب البقاء في الإعلان 10 ثوانٍ...";
+        setTimeout(function() {
+            msg.innerHTML = "تم بنجاح! جاري تحويلك...";
+            setTimeout(function() { window.location.href = youtubeVideoUrl; }, 1000);
+        }, 10000);
+    }
+
+    async function checkAdBlock() {
+        // فحص حاجب الإعلانات باستخدام رابط السكربت الجديد
+        var adScript = "https://pl28383705.effectivegatecpm.com/56/95/42/569542e974434f0ab768675be4d8fce0.js";
+        try { await fetch(adScript, { method: 'HEAD', mode: 'no-cors' }); }
+        catch (e) { document.getElementById('adblock-message').style.display = 'block'; }
+    }
+    checkAdBlock();
+</script>
+
+</body>
+</html>
