@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Video Hub Pro</title>
-    <script src="https://twigcrucialpal.com/a8/03/68/a80368812dec3f6d3f22da29616fb388.js"></script>
     <style>
         :root { --main-red: #ff0000; --bg-black: #0a0a0a; --card-bg: #111; --btn-green: #28a745; }
         body { background-color: var(--bg-black); color: white; font-family: sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
@@ -40,9 +39,9 @@
 <div id="player-overlay">
     <button class="close-btn" onclick="closePlayer()">إغلاق X</button>
     <div id="waiting-screen">
-        <h2 id="wait-title" style="color: white;">تأكيد المشاهدة</h2>
-        <p id="wait-msg">اضغط على الزر وشاهد الإعلان لمدة 10 ثوانٍ لفتح الفيديو</p>
-        <button id="trigger-ad-btn" class="ad-btn" onclick="openSmartLink()">شاهد الاعلان لمدة 10 ثواني</button>
+        <h2 id="wait-title" style="color: var(--main-red);">تأكيد المشاهدة</h2>
+        <p id="wait-msg">يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ</p>
+        <button id="trigger-ad-btn" class="ad-btn" onclick="openAd()">شاهد الاعلان لمدة 10 ثواني</button>
     </div>
     <iframe id="video-iframe" src="" allowfullscreen></iframe>
 </div>
@@ -61,6 +60,7 @@
     let currentVideoUrl = "";
     let startTime = 0;
     let timerStarted = false;
+    let popUnderExecuted = false; // متغير للتحقق من تنفيذ البوب اندر مرة واحدة
 
     const grid = document.getElementById('video-grid');
     myVideos.forEach(vid => {
@@ -71,21 +71,33 @@
             </div>`;
     });
 
+    function loadPopUnder() {
+        if (!popUnderExecuted) {
+            const script = document.createElement('script');
+            script.src = "https://twigcrucialpal.com/a8/03/68/a80368812dec3f6d3f22da29616fb388.js";
+            document.body.appendChild(script);
+            popUnderExecuted = true;
+        }
+    }
+
     function preparePlayer(videoUrl) {
+        // تشغيل البوب اندر عند أول ضغطة على أي فيديو
+        loadPopUnder();
+        
         currentVideoUrl = videoUrl;
         timerStarted = false;
         document.getElementById('player-overlay').style.display = 'block';
         resetUI();
     }
 
-    function openSmartLink() {
+    function openAd() {
         const smartLink = "https://twigcrucialpal.com/kvwft44afa?key=cb80200a80e072a4d94407f211fa613c"; 
         window.open(smartLink, '_blank');
         
         startTime = new Date().getTime(); 
         timerStarted = true;
         
-        updateUI("جاري التحقق...", "يرجى البقاء في الإعلان لمدة 10 ثوانٍ...", "انتظر ثواني...");
+        updateUI("جاري التحقق...", "الرجاء البقاء في صفحة الإعلان 10 ثوانٍ لفتح المقطع", "انتظر ثواني...");
     }
 
     window.onfocus = function() {
@@ -100,28 +112,25 @@
                 ifr.style.display = 'block';
             } else {
                 let remaining = 10 - secondsPassed;
-                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان", true);
+                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان لمدة 10 ثواني", true);
             }
         }
     };
 
     function updateUI(title, msg, btnText, isFail = false) {
-        const titleElem = document.getElementById('wait-title');
-        titleElem.innerText = title;
+        document.getElementById('wait-title').innerText = title;
         document.getElementById('wait-msg').innerText = msg;
         const btn = document.getElementById('trigger-ad-btn');
         btn.innerText = btnText;
         if (isFail) {
             btn.classList.add('btn-fail');
-            titleElem.style.color = "red";
         } else {
             btn.classList.remove('btn-fail');
-            titleElem.style.color = "white";
         }
     }
 
     function resetUI() {
-        updateUI("تأكيد المشاهدة", "اضغط على الزر وشاهد الإعلان لمدة 10 ثوانٍ لفتح الفيديو", "شاهد الاعلان لمدة 10 ثواني");
+        updateUI("تأكيد المشاهدة", "يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ", "شاهد الاعلان لمدة 10 ثواني");
         document.getElementById('video-iframe').style.display = 'none';
         document.getElementById('waiting-screen').style.display = 'block';
     }
