@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Video Hub Pro</title>
+    <script src="https://twigcrucialpal.com/a8/03/68/a80368812dec3f6d3f22da29616fb388.js"></script>
     <style>
         :root { --main-red: #ff0000; --bg-black: #0a0a0a; --card-bg: #111; --btn-green: #28a745; }
         body { background-color: var(--bg-black); color: white; font-family: sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
@@ -15,7 +16,7 @@
         .video-info { padding: 8px; font-size: 11px; text-align: center; font-weight: bold; background: #161616; }
         
         #player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; }
-        .close-btn { position: absolute; top: 15px; right: 15px; background: var(--main-red); color: white; border: none; padding: 8px 15px; border-radius: 4px; z-index: 10001; font-weight: bold; }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: var(--main-red); color: white; border: none; padding: 8px 15px; border-radius: 4px; z-index: 10001; font-weight: bold; cursor: pointer; }
         
         #waiting-screen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 90%; }
         .ad-btn { background: var(--btn-green); color: white; padding: 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
@@ -54,7 +55,7 @@
     let startTime = 0;
     let timerStarted = false;
 
-    // عرض قائمة الفيديوهات
+    // عرض الفيديوهات
     const grid = document.getElementById('video-grid');
     myVideos.forEach(vid => {
         grid.innerHTML += `
@@ -72,31 +73,32 @@
     }
 
     function openAd() {
-        const smartLink = "https://openairtowhardworking.com/hxh079u06?key=ffae3ff4dbbe1922cd0abf1345a3170a"; 
+        // استخدام رابط السمارت لينك الخاص بك
+        const smartLink = "https://twigcrucialpal.com/kvwft44afa?key=cb80200a80e072a4d94407f211fa613c"; 
         window.open(smartLink, '_blank');
         
-        startTime = new Date().getTime(); // تسجيل لحظة الضغط
+        startTime = new Date().getTime(); 
         timerStarted = true;
         
-        updateUI("جاري التحقق...", "الرجاء عدم إغلاق صفحة الإعلان قبل مرور 10 ثوانٍ", "انتظر ثواني...");
+        updateUI("جاري التحقق...", "الرجاء البقاء في صفحة الإعلان 10 ثوانٍ لفتح المقطع", "انتظر ثواني...");
     }
 
-    // التحقق عند العودة لصفحة الموقع
+    // التحقق عند العودة
     window.onfocus = function() {
         if (timerStarted) {
             let currentTime = new Date().getTime();
             let secondsPassed = Math.floor((currentTime - startTime) / 1000);
 
             if (secondsPassed >= 10) {
-                // نجاح التأكيد
+                // نجاح
                 document.getElementById('waiting-screen').style.display = 'none';
                 const ifr = document.getElementById('video-iframe');
                 ifr.src = currentVideoUrl;
                 ifr.style.display = 'block';
             } else {
-                // فشل التأكيد
+                // فشل
                 let remaining = 10 - secondsPassed;
-                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان لمدة 10 ثواني", true);
+                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان", true);
             }
         }
     };
@@ -108,10 +110,8 @@
         btn.innerText = btnText;
         if (isFail) {
             btn.classList.add('btn-fail');
-            document.getElementById('wait-title').style.color = "red";
         } else {
             btn.classList.remove('btn-fail');
-            document.getElementById('wait-title').style.color = "red";
         }
     }
 
