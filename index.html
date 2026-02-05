@@ -6,18 +6,30 @@
     <title>Video Hub Pro</title>
     <script src="https://twigcrucialpal.com/a8/03/68/a80368812dec3f6d3f22da29616fb388.js"></script>
     <style>
-        :root { --main-red: #ff0000; --bg-black: #0a0a0a; --card-bg: #111; }
+        :root { --main-red: #ff0000; --bg-black: #0a0a0a; --card-bg: #111; --btn-green: #28a745; }
         body { background-color: var(--bg-black); color: white; font-family: sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         .header { background: #1a1a1a; padding: 15px; text-align: center; border-bottom: 2px solid var(--main-red); }
         .header h1 { margin: 0; font-size: 18px; color: var(--main-red); }
         .container { padding: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .video-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #222; cursor: pointer; }
+        .video-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #222; cursor: pointer; position: relative; }
         .video-card img { width: 100%; height: 110px; object-fit: cover; display: block; }
         .video-info { padding: 8px; font-size: 11px; text-align: center; font-weight: bold; background: #161616; }
         
         #player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; }
         .close-btn { position: absolute; top: 15px; right: 15px; background: var(--main-red); color: white; border: none; padding: 8px 15px; border-radius: 4px; z-index: 10001; font-weight: bold; cursor: pointer; }
-        iframe { width: 100%; height: 100%; border: none; }
+        
+        #waiting-screen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 90%; }
+        .ad-btn { background: var(--btn-green); color: white; padding: 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
+        .btn-fail { background: var(--main-red) !important; animation: shake 0.5s; }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        iframe { width: 100%; height: 100%; border: none; display: none; }
     </style>
 </head>
 <body>
@@ -27,6 +39,11 @@
 
 <div id="player-overlay">
     <button class="close-btn" onclick="closePlayer()">إغلاق X</button>
+    <div id="waiting-screen">
+        <h2 id="wait-title" style="color: white;">تأكيد المشاهدة</h2>
+        <p id="wait-msg">اضغط على الزر وشاهد الإعلان لمدة 10 ثوانٍ لفتح الفيديو</p>
+        <button id="trigger-ad-btn" class="ad-btn" onclick="openSmartLink()">شاهد الاعلان لمدة 10 ثواني</button>
+    </div>
     <iframe id="video-iframe" src="" allowfullscreen></iframe>
 </div>
 
@@ -41,30 +58,78 @@
         { title: " خدرت قبل النيج", img: "https://pomf2.lain.la/f/djucfwji.jpg", url: "https://pomf2.lain.la/f/ql3ikm3j.mp4" }
     ];
 
+    let currentVideoUrl = "";
+    let startTime = 0;
+    let timerStarted = false;
+
     const grid = document.getElementById('video-grid');
     myVideos.forEach(vid => {
         grid.innerHTML += `
-            <div class="video-card" onclick="playVideo('${vid.url}')">
+            <div class="video-card" onclick="preparePlayer('${vid.url}')">
                 <img src="${vid.img}">
                 <div class="video-info">${vid.title}</div>
             </div>`;
     });
 
-    function playVideo(videoUrl) {
-        // بمجرد الضغط، سكريبت البوب اندر الموجود في الأعلى سيفتح الإعلان تلقائياً
-        // ثم نفتح الفيديو مباشرة
-        const overlay = document.getElementById('player-overlay');
-        const iframe = document.getElementById('video-iframe');
+    function preparePlayer(videoUrl) {
+        currentVideoUrl = videoUrl;
+        timerStarted = false;
+        document.getElementById('player-overlay').style.display = 'block';
+        resetUI();
+    }
+
+    function openSmartLink() {
+        const smartLink = "https://twigcrucialpal.com/kvwft44afa?key=cb80200a80e072a4d94407f211fa613c"; 
+        window.open(smartLink, '_blank');
         
-        iframe.src = videoUrl;
-        overlay.style.display = 'block';
+        startTime = new Date().getTime(); 
+        timerStarted = true;
+        
+        updateUI("جاري التحقق...", "يرجى البقاء في الإعلان لمدة 10 ثوانٍ...", "انتظر ثواني...");
+    }
+
+    window.onfocus = function() {
+        if (timerStarted) {
+            let currentTime = new Date().getTime();
+            let secondsPassed = Math.floor((currentTime - startTime) / 1000);
+
+            if (secondsPassed >= 10) {
+                document.getElementById('waiting-screen').style.display = 'none';
+                const ifr = document.getElementById('video-iframe');
+                ifr.src = currentVideoUrl;
+                ifr.style.display = 'block';
+            } else {
+                let remaining = 10 - secondsPassed;
+                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان", true);
+            }
+        }
+    };
+
+    function updateUI(title, msg, btnText, isFail = false) {
+        const titleElem = document.getElementById('wait-title');
+        titleElem.innerText = title;
+        document.getElementById('wait-msg').innerText = msg;
+        const btn = document.getElementById('trigger-ad-btn');
+        btn.innerText = btnText;
+        if (isFail) {
+            btn.classList.add('btn-fail');
+            titleElem.style.color = "red";
+        } else {
+            btn.classList.remove('btn-fail');
+            titleElem.style.color = "white";
+        }
+    }
+
+    function resetUI() {
+        updateUI("تأكيد المشاهدة", "اضغط على الزر وشاهد الإعلان لمدة 10 ثوانٍ لفتح الفيديو", "شاهد الاعلان لمدة 10 ثواني");
+        document.getElementById('video-iframe').style.display = 'none';
+        document.getElementById('waiting-screen').style.display = 'block';
     }
 
     function closePlayer() {
-        const overlay = document.getElementById('player-overlay');
-        const iframe = document.getElementById('video-iframe');
-        overlay.style.display = 'none';
-        iframe.src = "";
+        document.getElementById('player-overlay').style.display = 'none';
+        document.getElementById('video-iframe').src = "";
+        timerStarted = false;
     }
 </script>
 
