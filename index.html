@@ -2,99 +2,133 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جاري تحضير الرابط...</title>
-
-    <script src="https://pl28383705.effectivegatecpm.com/56/95/42/569542e974434f0ab768675be4d8fce0.js"></script>
-
+    <meta name="yandex-verification" content="a802d131d1eebddb" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Video Hub Pro</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: #1a1a1a; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-        #click-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; cursor: pointer; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); }
-        .card { background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 1001; min-width: 300px; max-width: 90%; }
-        .timer { font-size: 70px; color: #e74c3c; font-weight: bold; margin: 15px 0; }
-        .btn-green { display: inline-block; padding: 15px 40px; background-color: #27ae60; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; cursor: pointer; border: none; }
-        .btn-green:disabled { background-color: #95a5a6; cursor: not-allowed; }
-        #adblock-message { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; color:white; text-align:center; padding-top:100px; }
+        :root { --main-red: #ff0000; --bg-black: #0a0a0a; --card-bg: #111; --btn-green: #28a745; }
+        body { background-color: var(--bg-black); color: white; font-family: sans-serif; margin: 0; padding: 0; }
+        .header { background: #1a1a1a; padding: 15px; text-align: center; border-bottom: 2px solid var(--main-red); }
+        .header h1 { margin: 0; font-size: 18px; color: var(--main-red); }
+        .container { padding: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .video-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #222; cursor: pointer; position: relative; }
+        .video-card img { width: 100%; height: 110px; object-fit: cover; display: block; }
+        .play-overlay { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; color: white; text-shadow: 0 0 10px #000; }
+        .video-info { padding: 8px; font-size: 12px; text-align: center; font-weight: bold; background: #161616; }
+        
+        #player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: var(--main-red); color: white; border: none; padding: 8px 15px; border-radius: 4px; z-index: 10001; font-weight: bold; cursor: pointer; }
+        
+        #waiting-screen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 90%; }
+        .ad-btn { background: var(--btn-green); color: white; padding: 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.3s; }
+        .btn-fail { background: var(--main-red) !important; animation: shake 0.5s; }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        iframe { width: 100%; height: 100%; border: none; display: none; }
     </style>
 </head>
 <body>
+    <div class="header"><h1>المقاطع الحصرية 🔥</h1></div>
+    <div class="container" id="video-grid"></div>
 
-<div id="adblock-message">
-    <h1>⚠️ عذراً، يجب تعطيل حاجب الإعلانات</h1>
-    <p>يرجى تعطيل مانع الإعلانات لتتمكن من الوصول للفيديو.</p>
-</div>
+    <div id="player-overlay">
+        <button id="close-button" class="close-btn" onclick="closePlayer()">إغلاق X</button>
+        
+        <div id="waiting-screen">
+            <h2 id="wait-title" style="color: var(--main-red);">تأكيد المشاهدة</h2>
+            <p id="wait-msg">يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ</p>
+            <button id="trigger-ad-btn" class="ad-btn" onclick="openAd()">شاهد الاعلان لمدة 10 ثواني</button>
+        </div>
 
-<div id="click-overlay" onclick="handleFirstClick()">
-    <div class="card">
-        <h2 id="status-text" style="color: #2c3e50;">إضغط في أي مكان للمشاهدة...</h2>
-        <div id="countdown" class="timer">30</div>
-        <p id="sub-text" style="color: #666;">سيتم تفعيل العداد بعد فتح الإعلان (5 ثوانٍ)</p>
+        <iframe id="video-iframe" src="" allowfullscreen></iframe>
     </div>
-</div>
 
-<div id="final-step" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; width: 100%; text-align: center;">
-    <div class="card" style="margin: auto;">
-        <h2 style="color: #2c3e50;">الرابط جاهز تقريباً!</h2>
-        <p style="color: #666; margin-bottom: 20px;">اضغط على الزر وانتظر 10 ثوانٍ للتحويل</p>
-        <button id="green-btn" onclick="handleSecondClick()" class="btn-green">اضغط للمشاهدة الآن</button>
-        <p id="wait-msg" style="margin-top: 15px; color: #e67e22; font-weight: bold;"></p>
-    </div>
-</div>
+    <script>
+        const myVideos = [
+            { title: "نيج وشم وبوس ورضع", img: "https://pomf2.lain.la/f/7ljeiyih.jpg", url: "https://pomf2.lain.la/f/2kmvmtqc.mp4" },
+            { title: " المحامي ينيج المنقبة ", img: "https://pomf2.lain.la/f/blffki4q.jpg", url: "https://pomf2.lain.la/f/2zv7s4.mp4" },
+            { title: " موطي ولج حيل ", img: "https://pomf2.lain.la/f/saeuwiu.jpg", url: "https://pomf2.lain.la/f/wq5mewq.mp4" },
+            { title: "عراقية ماتقبل تناج ينيجها غصب", img: "https://pomf2.lain.la/f/d831j7ik.jpg", url: "https://pomf2.lain.la/f/4tzdviq0.mp4" },
+            { title: "اخ طيزي ماتحمل بعد", img: "https://pomf2.lain.la/f/r80dknj6.jpg", url: "https://pomf2.lain.la/f/jil7rg0k.mp4" },
+            { title: "عراقية يغتصبها", img: "https://pomf2.lain.la/f/g9d9ez3f.jpg", url: "https://pomf2.lain.la/f/oeuqnwan.mp4" },
+            { title: " خدرت قبل النيج", img: "https://pomf2.lain.la/f/djucfwji.jpg", url: "https://pomf2.lain.la/f/ql3ikm3j.mp4" }
+        ];
 
-<script>
-    // ==========================================
-    // ⬇️ ضع رابط الفيديو هنا ⬇️
-    var youtubeVideoUrl = "https://youtu.be/dIHVCuh47b0"; 
-    // ==========================================
+        let currentVideoUrl = "";
+        let adOpened = false;
+        let timeLeft = 10;
+        let countdownInterval;
 
-    var timeLeft = 30;
-    var firstClickDone = false;
+        const grid = document.getElementById('video-grid');
+        myVideos.forEach(vid => {
+            // تصحيح: إضافة علامات ` ليتم التعرف على كود الـ HTML
+            grid.innerHTML += `
+                <div class="video-card" onclick="preparePlayer('${vid.url}')">
+                    <img src="${vid.img}">
+                    <div class="play-overlay">▶</div>
+                    <div class="video-info">${vid.title}</div>
+                </div>`;
+        });
 
-    function handleFirstClick() {
-        if (firstClickDone) return;
-        firstClickDone = true;
-        
-        // تم حذف window.open الخاص بالسمارت لينك القديم ليعمل البوب اندر الجديد فقط
-        
-        document.getElementById("status-text").innerHTML = "جاري التأكد من المشاهدة...";
-        document.getElementById("status-text").style.color = "#e67e22";
-        setTimeout(function() { startTimer(); }, 5000);
-    }
+        function preparePlayer(videoUrl) {
+            currentVideoUrl = videoUrl;
+            resetState();
+            const btn = document.getElementById('trigger-ad-btn');
+            btn.classList.remove('btn-fail');
+            document.getElementById('player-overlay').style.display = 'block';
+            document.getElementById('video-iframe').style.display = 'none';
+            document.getElementById('waiting-screen').style.display = 'block';
+            updateUI("تأكيد المشاهدة", "يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ", "شاهد الاعلان لمدة 10 ثواني");
+        }
 
-    function startTimer() {
-        document.getElementById("status-text").innerHTML = "جاري تجهيز الرابط...";
-        document.getElementById("status-text").style.color = "#27ae60";
-        var downloadTimer = setInterval(function(){
-            timeLeft -= 1;
-            document.getElementById("countdown").innerHTML = timeLeft;
-            if(timeLeft <= 0){
-                clearInterval(downloadTimer);
-                document.getElementById("click-overlay").style.display = "none";
-                document.getElementById("final-step").style.display = "block";
-            }
-        }, 1000);
-    }function handleSecondClick() {
-        // تم حذف window.open الخاص بالسمارت لينك القديم ليعمل البوب اندر الجديد فقط
-        
-        var btn = document.getElementById("green-btn");
-        var msg = document.getElementById("wait-msg");
-        btn.disabled = true;
-        btn.innerHTML = "جاري التحقق...";
-        msg.innerHTML = "يجب البقاء في الإعلان 10 ثوانٍ...";
-        setTimeout(function() {
-            msg.innerHTML = "تم بنجاح! جاري تحويلك...";
-            setTimeout(function() { window.location.href = youtubeVideoUrl; }, 1000);
-        }, 10000);
-    }
+        function openAd() {
+            var smartLink = "https://openairtowhardworking.com/hxh079u06?key=ffae3ff4dbbe1922cd0abf1345a3170a"; 
+            window.open(smartLink, '_blank');
+            adOpened = true;
+            
+            // بدء العداد التنازلي
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                updateUI("انتظار التحقق...", `العداد يعمل الآن.. انتظر ${timeLeft} ثانية`, `جاري التحقق (${timeLeft})`);
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    showVideo();
+                }
+            }, 1000);
+        }
 
-    async function checkAdBlock() {
-        // فحص حاجب الإعلانات باستخدام رابط السكربت الجديد
-        var adScript = "https://pl28383705.effectivegatecpm.com/56/95/42/569542e974434f0ab768675be4d8fce0.js";
-        try { await fetch(adScript, { method: 'HEAD', mode: 'no-cors' }); }
-        catch (e) { document.getElementById('adblock-message').style.display = 'block'; }
-    }
-    checkAdBlock();
-</script>
+        function showVideo() {
+            document.getElementById('waiting-screen').style.display = 'none';
+            const iframe = document.getElementById('video-iframe');
+            iframe.src = currentVideoUrl;
+            iframe.style.display = 'block';
+        }
 
+        function closePlayer() {
+            resetState();
+            document.getElementById('player-overlay').style.display = 'none';
+            document.getElementById('video-iframe').src = "";
+        }
+
+        function resetState() {
+            adOpened = false;
+            timeLeft = 10;
+            if (countdownInterval) clearInterval(countdownInterval);
+        }
+
+        function updateUI(title, msg, btnText) {
+            document.getElementById('wait-title').innerText = title;
+            document.getElementById('wait-msg').innerText = msg;
+            document.getElementById('trigger-ad-btn').innerText = btnText;
+        }
+    </script>
 </body>
 </html>
