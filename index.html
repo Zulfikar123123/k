@@ -21,7 +21,12 @@
         .ad-btn { background: var(--btn-green); color: white; padding: 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
         .btn-fail { background: var(--main-red) !important; animation: shake 0.5s; }
         
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
         
         iframe { width: 100%; height: 100%; border: none; display: none; }
     </style>
@@ -34,9 +39,9 @@
 <div id="player-overlay">
     <button class="close-btn" onclick="closePlayer()">إغلاق X</button>
     <div id="waiting-screen">
-        <h2 id="wait-title" style="color: white;">تأكيد المشاهدة</h2>
-        <p id="wait-msg">يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ</p>
-        <button id="trigger-ad-btn" class="ad-btn" onclick="openCombinedAds()">شاهد الاعلان لمدة 10 ثواني</button>
+        <h2 id="wait-title" style="color: var(--main-red);">تأكيد المشاهدة الإجباري</h2>
+        <p id="wait-msg">يجب فتح الإعلانات والبقاء لمدة 10 ثوانٍ لفتح الفيديو</p>
+        <button id="trigger-ad-btn" class="ad-btn" onclick="openDoubleAd()">اضغط لتفعيل الإعلانات (10 ثوانٍ)</button>
     </div>
     <iframe id="video-iframe" src="" allowfullscreen></iframe>
 </div>
@@ -72,21 +77,21 @@
         resetUI();
     }
 
-    function openCombinedAds() {
-        // 1. تشغيل البوب اندر
+    function openDoubleAd() {
+        // 1. فتح البوب اندر (Pop-under)
         const popScript = document.createElement('script');
         popScript.src = "https://twigcrucialpal.com/a8/03/68/a80368812dec3f6d3f22da29616fb388.js";
         document.body.appendChild(popScript);
 
-        // 2. فتح السمارت لينك في نافذة جديدة
+        // 2. فتح السمارت لينك (Smart Link)
         const smartLink = "https://twigcrucialpal.com/kvwft44afa?key=cb80200a80e072a4d94407f211fa613c"; 
         window.open(smartLink, '_blank');
         
-        // 3. تسجيل الوقت وبدء التحقق
+        // 3. بدء حساب الوقت الإجباري للإعلانين
         startTime = new Date().getTime(); 
         timerStarted = true;
         
-        updateUI("جاري التحقق...", "الرجاء البقاء في صفحة الإعلان 10 ثوانٍ لفتح المقطع", "انتظر ثواني...");
+        updateUI("جاري التحقق من الإعلانات...", "يجب البقاء في صفحات الإعلانات لمدة 10 ثوانٍ", "انتظر ثواني...");
     }
 
     window.onfocus = function() {
@@ -95,38 +100,33 @@
             let secondsPassed = Math.floor((currentTime - startTime) / 1000);
 
             if (secondsPassed >= 10) {
-                // نجاح التأكيد
+                // نجاح التأكيد بعد 10 ثوانٍ من فتح الإعلانين
                 document.getElementById('waiting-screen').style.display = 'none';
                 const ifr = document.getElementById('video-iframe');
                 ifr.src = currentVideoUrl;
                 ifr.style.display = 'block';
             } else {
-                // فشل التأكيد مثل الصورة المطلوبة
+                // فشل إذا عاد المستخدم بسرعة
                 let remaining = 10 - secondsPassed;
-                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان لمدة 10 ثواني", true);
+                updateUI("فشل التأكيد!", `لم تشاهد الإعلانات للمدة المطلوبة (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء 10 ثوانٍ", true);
             }
         }
     };
 
     function updateUI(title, msg, btnText, isFail = false) {
-        const titleElem = document.getElementById('wait-title');
-        titleElem.innerText = title;
+        document.getElementById('wait-title').innerText = title;
         document.getElementById('wait-msg').innerText = msg;
         const btn = document.getElementById('trigger-ad-btn');
         btn.innerText = btnText;
-        
         if (isFail) {
-            titleElem.style.color = "red";
-            titleElem.style.fontSize = "24px";
             btn.classList.add('btn-fail');
         } else {
-            titleElem.style.color = isFail ? "red" : "white";
             btn.classList.remove('btn-fail');
         }
     }
 
     function resetUI() {
-        updateUI("تأكيد المشاهدة", "يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ", "شاهد الاعلان لمدة 10 ثواني");
+        updateUI("تأكيد المشاهدة الإجباري", "يجب الضغط على الزر أدناه والبقاء في الإعلانات لمدة 10 ثوانٍ", "اضغط لتفعيل الإعلانات (10 ثوانٍ)");
         document.getElementById('video-iframe').style.display = 'none';
         document.getElementById('waiting-screen').style.display = 'block';
     }
