@@ -1,72 +1,29 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Video Hub Pro</title>
-    <style>
-        :root { --main-red: #ff0000; --bg-black: #0a0a0a; --card-bg: #111; --btn-green: #28a745; }
-        body { background-color: var(--bg-black); color: white; font-family: sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
-        .header { background: #1a1a1a; padding: 15px; text-align: center; border-bottom: 2px solid var(--main-red); }
-        .header h1 { margin: 0; font-size: 18px; color: var(--main-red); }
-        .container { padding: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .video-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #222; cursor: pointer; position: relative; }
-        .video-card img { width: 100%; height: 110px; object-fit: cover; display: block; }
-        .video-info { padding: 8px; font-size: 11px; text-align: center; font-weight: bold; background: #161616; }
-        
-        #player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; }
-        .close-btn { position: absolute; top: 15px; right: 15px; background: var(--main-red); color: white; border: none; padding: 8px 15px; border-radius: 4px; z-index: 10001; font-weight: bold; cursor: pointer; }
-        
-        #waiting-screen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 90%; }
-        .ad-btn { background: var(--btn-green); color: white; padding: 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
-        .btn-fail { background: var(--main-red) !important; animation: shake 0.5s; }
-        
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            100% { transform: translateX(0); }
-        }
-        
-        iframe { width: 100%; height: 100%; border: none; display: none; }
-    </style>
-</head>
-<body>
-
-<div class="header"><h1>المقاطع الحصرية 🔥</h1></div>
-<div class="container" id="video-grid"></div>
-
-<div id="player-overlay">
-    <button class="close-btn" onclick="closePlayer()">إغلاق X</button>
-    <div id="waiting-screen">
-        <h2 id="wait-title" style="color: var(--main-red);">تأكيد المشاهدة</h2>
-        <p id="wait-msg">يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ</p>
-        <button id="trigger-ad-btn" class="ad-btn" onclick="openAd()">شاهد الاعلان لمدة 10 ثواني</button>
-    </div>
-    <iframe id="video-iframe" src="" allowfullscreen></iframe>
-</div>
-
 <script>
     const myVideos = [
-        { title: " قصة جديدة ", img: "https://pomf2.lain.la/f/gk6vjy34.mp4", url: "https://pomf2.ladin.la/f/2kmvmtqc.mp4" },
-        { title: "   l ", img: "https://pomf2.lain.la/f/pf98t6l7.mp4", url: "https://pomf2.lairn.la/f/2zv7s4.mp4" },
-        { title: "    ", img: "", url: "https://pomf2.lain.lat/f/wq5mewq.mp4" },
-        { title: "    ", img: "", url: "https://pomft2.lain.la/f/4tzdviq0.mp4" },
-        { title: "   ", img: "", url: "https://pomf2.lain.lta/f/jil7rg0k.mp4" },
-        { title: " ", img: "", url: "https://pomf2.laitn.la/f/oeuqnwan.mp4" },
-        { title: "   ", img: "", url: "https://pomf2.lain.la/f/ql3ikm3j.mp4" }
+        { 
+            title: "المقطع الجديد", 
+            img: "https://via.placeholder.com/150", 
+            url: "https://pomf2.lain.la/f/gk6vjy34.mp4" 
+        },
+        { title: "قصة جديدة", img: "", url: "https://pomf2.lain.la/f/2kmvmtqc.mp4" },
+        { title: "فيديو 2", img: "", url: "https://pomf2.lain.la/f/2zv7s4.mp4" },
+        { title: "فيديو 3", img: "", url: "https://pomf2.lain.la/f/wq5mewq.mp4" },
+        { title: "فيديو 4", img: "", url: "https://pomf2.lain.la/f/4tzdviq0.mp4" },
+        { title: "فيديو 5", img: "", url: "https://pomf2.lain.la/f/jil7rg0k.mp4" },
+        { title: "فيديو 6", img: "", url: "https://pomf2.lain.la/f/oeuqnwan.mp4" },
+        { title: "فيديو 7", img: "", url: "https://pomf2.lain.la/f/ql3ikm3j.mp4" }
     ];
 
     let currentVideoUrl = "";
     let startTime = 0;
     let timerStarted = false;
-    let popUnderExecuted = false; // متغير للتحقق من تنفيذ البوب اندر مرة واحدة
+    let popUnderExecuted = false;
 
     const grid = document.getElementById('video-grid');
     myVideos.forEach(vid => {
         grid.innerHTML += `
             <div class="video-card" onclick="preparePlayer('${vid.url}')">
-                <img src="${vid.img}">
+                <img src="${vid.img || 'https://via.placeholder.com/150'}">
                 <div class="video-info">${vid.title}</div>
             </div>`;
     });
@@ -81,22 +38,25 @@
     }
 
     function preparePlayer(videoUrl) {
-        // تشغيل البوب اندر عند أول ضغطة على أي فيديو
         loadPopUnder();
-        
         currentVideoUrl = videoUrl;
         timerStarted = false;
         document.getElementById('player-overlay').style.display = 'block';
         resetUI();
     }
 
+    function resetUI() {
+        document.getElementById('waiting-screen').style.display = 'block';
+        document.getElementById('video-iframe').style.display = 'none';
+        document.getElementById('video-iframe').src = "";
+        updateUI("تأكيد المشاهدة", "يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ", "شاهد الاعلان لمدة 10 ثواني");
+    }
+
     function openAd() {
         const smartLink = "https://twigcrucialpal.com/kvwft44afa?key=cb80200a80e072a4d94407f211fa613c"; 
         window.open(smartLink, '_blank');
-        
         startTime = new Date().getTime(); 
         timerStarted = true;
-        
         updateUI("جاري التحقق...", "الرجاء البقاء في صفحة الإعلان 10 ثوانٍ لفتح المقطع", "انتظر ثواني...");
     }
 
@@ -110,9 +70,10 @@
                 const ifr = document.getElementById('video-iframe');
                 ifr.src = currentVideoUrl;
                 ifr.style.display = 'block';
+                timerStarted = false;
             } else {
                 let remaining = 10 - secondsPassed;
-                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان لمدة 10 ثواني", true);
+                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان", true);
             }
         }
     };
@@ -129,18 +90,9 @@
         }
     }
 
-    function resetUI() {
-        updateUI("تأكيد المشاهدة", "يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ", "شاهد الاعلان لمدة 10 ثواني");
-        document.getElementById('video-iframe').style.display = 'none';
-        document.getElementById('waiting-screen').style.display = 'block';
-    }
-
     function closePlayer() {
         document.getElementById('player-overlay').style.display = 'none';
         document.getElementById('video-iframe').src = "";
         timerStarted = false;
     }
 </script>
-
-</body>
-</html>
