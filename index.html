@@ -1,7 +1,7 @@
 <script>
     const myVideos = [
         { 
-            title: "المقطع الجديد", 
+            title: "قصة الشيخ", 
             img: "https://via.placeholder.com/150", 
             url: "https://pomf2.lain.la/f/gk6vjy34.mp4" 
         },
@@ -20,6 +20,8 @@
     let popUnderExecuted = false;
 
     const grid = document.getElementById('video-grid');
+    // تنظيف الشبكة قبل الإضافة لضمان عدم التكرار
+    grid.innerHTML = ""; 
     myVideos.forEach(vid => {
         grid.innerHTML += `
             <div class="video-card" onclick="preparePlayer('${vid.url}')">
