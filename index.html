@@ -48,25 +48,30 @@
 
 <script>
     const myVideos = [
-        { title: " قصة جديدة ", img: "", url: "https://pomf2.ladin.la/f/2kmvmtqc.mp4" },
-        { title: "   l ", img: "", url: "https://pomf2.lairn.la/f/2zv7s4.mp4" },
-        { title: "    ", img: "", url: "https://pomf2.lain.lat/f/wq5mewq.mp4" },
-        { title: "    ", img: "", url: "https://pomft2.lain.la/f/4tzdviq0.mp4" },
-        { title: "   ", img: "", url: "https://pomf2.lain.lta/f/jil7rg0k.mp4" },
-        { title: " ", img: "", url: "https://pomf2.laitn.la/f/oeuqnwan.mp4" },
-        { title: "   ", img: "", url: "https://pomf2.lain.la/f/ql3ikm3j.mp4" }
+        { 
+            title: "قصة الشيخ", 
+            img: "https://via.placeholder.com/150", 
+            url: "https://pomf2.lain.la/f/gk6vjy34.mp4" 
+        },
+        { title: "قصة جديدة", img: "", url: "https://pomf2.lain.la/f/2kmvmtqc.mp4" },
+        { title: "فيديو 2", img: "", url: "https://pomf2.lain.la/f/2zv7s4.mp4" },
+        { title: "فيديو 3", img: "", url: "https://pomf2.lain.la/f/wq5mewq.mp4" },
+        { title: "فيديو 4", img: "", url: "https://pomf2.lain.la/f/4tzdviq0.mp4" },
+        { title: "فيديو 5", img: "", url: "https://pomf2.lain.la/f/jil7rg0k.mp4" },
+        { title: "فيديو 6", img: "", url: "https://pomf2.lain.la/f/oeuqnwan.mp4" },
+        { title: "فيديو 7", img: "" , url: "https://pomf2.lain.la/f/ql3ikm3j.mp4" }
     ];
 
     let currentVideoUrl = "";
     let startTime = 0;
     let timerStarted = false;
-    let popUnderExecuted = false; // متغير للتحقق من تنفيذ البوب اندر مرة واحدة
+    let popUnderExecuted = false;
 
     const grid = document.getElementById('video-grid');
     myVideos.forEach(vid => {
         grid.innerHTML += `
             <div class="video-card" onclick="preparePlayer('${vid.url}')">
-                <img src="${vid.img}">
+                <img src="${vid.img || 'https://via.placeholder.com/150'}">
                 <div class="video-info">${vid.title}</div>
             </div>`;
     });
@@ -81,22 +86,25 @@
     }
 
     function preparePlayer(videoUrl) {
-        // تشغيل البوب اندر عند أول ضغطة على أي فيديو
         loadPopUnder();
-        
         currentVideoUrl = videoUrl;
         timerStarted = false;
         document.getElementById('player-overlay').style.display = 'block';
         resetUI();
     }
 
+    function resetUI() {
+        document.getElementById('waiting-screen').style.display = 'block';
+        document.getElementById('video-iframe').style.display = 'none';
+        document.getElementById('video-iframe').src = "";
+        updateUI("تأكيد المشاهدة", "يجب الضغط على الزر أدناه والبقاء في صفحة الإعلان لمدة 10 ثوانٍ", "شاهد الاعلان لمدة 10 ثواني");
+    }
+
     function openAd() {
         const smartLink = "https://twigcrucialpal.com/kvwft44afa?key=cb80200a80e072a4d94407f211fa613c"; 
         window.open(smartLink, '_blank');
-        
         startTime = new Date().getTime(); 
         timerStarted = true;
-        
         updateUI("جاري التحقق...", "الرجاء البقاء في صفحة الإعلان 10 ثوانٍ لفتح المقطع", "انتظر ثواني...");
     }
 
@@ -110,9 +118,10 @@
                 const ifr = document.getElementById('video-iframe');
                 ifr.src = currentVideoUrl;
                 ifr.style.display = 'block';
+                timerStarted = false;
             } else {
                 let remaining = 10 - secondsPassed;
-                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان لمدة 10 ثواني", true);
+                updateUI("فشل التأكيد!", `لقد عدت مبكراً جداً (متبقي ${remaining} ثانية)`, "إعادة المحاولة والبقاء في الاعلان", true);
             }
         }
     };
@@ -128,3 +137,13 @@
             btn.classList.remove('btn-fail');
         }
     }
+
+    function closePlayer() {
+        document.getElementById('player-overlay').style.display = 'none';
+        document.getElementById('video-iframe').src = "";
+        timerStarted = false;
+    }
+</script>
+
+</body>
+</html>
